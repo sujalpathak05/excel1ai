@@ -1,0 +1,70 @@
+You are an expert full-stack developer. Build a COMPLETE Excel Automation Web App with the following requirements:
+
+### 🎯 Goal:
+A fully functional web app where users can upload Excel files (.xls, .xlsx, .csv) and perform automated Excel operations with an intuitive frontend and robust backend.
+
+---
+
+### ⚡️ Features:
+✅ File Upload:
+- Accept .xls, .xlsx, .csv files.
+- Parse and display data in a table.
+
+✅ Data Cleaning & Transformation:
+- Remove duplicates.
+- Trim spaces and remove special characters.
+- Change text case (upper/lower).
+- Split or merge columns.
+- Find and replace text.
+- Format dates, numbers, and text.
+
+✅ Advanced Analysis:
+- Generate pivot tables.
+- Group and aggregate data (count, sum, average, min, max).
+- Filter and sort data.
+- Conditional formatting.
+
+✅ Export:
+- Export modified files in .xls, .xlsx, .csv, .pdf.
+- Export charts, graphs, and dashboards.
+
+✅ Automation:
+- Save templates for repetitive tasks.
+- Support scheduling for recurring jobs (daily/weekly).
+- Scripts/macros support (Python).
+
+✅ Integrations:
+- API connectivity (fetch data from REST APIs).
+- Export/import data from databases (MySQL, PostgreSQL).
+- Export/import to and from Google Sheets.
+- Slack/email notifications for completed jobs.
+
+✅ Visualization:
+- Interactive charts (bar, line, pie).
+- Export dashboards as images or PDFs.
+
+✅ User-Friendly Features:
+- Drag & Drop file upload.
+- Simple, clean, responsive UI.
+- User role-based access and version history.
+
+✅ Architecture:
+- Backend: Node.js / Express (or Python / Flask / FastAPI).
+- Frontend: React / Next.js.
+- File Parsing: Use libraries like `papaparse`, `xlsx`.
+- Charts: `Chart.js` or `Recharts`.
+- Exporting PDFs: `jspdf`.
+- Exporting Excel: `xlsx` or `exceljs`.
+- Database support (SQLite or PostgreSQL).
+- Auth & User Management (JWT or NextAuth).
+
+---
+
+### ⚡️ Output:
+- Complete working codebase with frontend + backend.
+- Clear installation instructions.
+- Demo page to test all features.
+- Commented and clean code.
+- Instructions for deployment.
+
+Please build this as a fully functional, production-ready Excel Automation App.
