@@ -87,8 +87,26 @@ async function handleLogin(e) {
 
 async function handleRegister(e) {
     e.preventDefault();
-    const username = document.getElementById('registerUsername').value;
+    const username = document.getElementById('registerUsername').value.trim();
     const password = document.getElementById('registerPassword').value;
+    
+    // Validation
+    if (!username || !password) {
+        showAlert('Please fill in all fields.', 'error');
+        return;
+    }
+    
+    if (username.length < 3) {
+        showAlert('Username must be at least 3 characters long.', 'error');
+        return;
+    }
+    
+    if (password.length < 6) {
+        showAlert('Password must be at least 6 characters long.', 'error');
+        return;
+    }
+    
+    showLoading('Creating account...');
     
     try {
         const response = await fetch('/api/auth/register', {
@@ -102,13 +120,20 @@ async function handleRegister(e) {
         const data = await response.json();
         
         if (response.ok) {
-            showAlert('Registration successful! Please login.', 'success');
+            hideLoading();
+            showAlert('Registration successful! Please login with your new account.', 'success');
             showTab('login');
+            // Clear form
+            document.getElementById('registerUsername').value = '';
+            document.getElementById('registerPassword').value = '';
         } else {
-            showAlert(data.error, 'error');
+            hideLoading();
+            showAlert(data.error || 'Registration failed', 'error');
         }
     } catch (error) {
-        showAlert('Registration failed. Please try again.', 'error');
+        hideLoading();
+        console.error('Registration error:', error);
+        showAlert('Registration failed. Please check your connection and try again.', 'error');
     }
 }
 

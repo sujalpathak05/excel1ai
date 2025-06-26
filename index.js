@@ -115,37 +115,95 @@ const authenticateToken = (req, res, next) => {
 app.post('/api/auth/register', async (req, res) => {
     try {
         const { username, password } = req.body;
-        const hashedPassword = await bcrypt.hash(password, 10);
         
-        db.run('INSERT INTO users (username, password) VALUES (?, ?)', [username, hashedPassword], function(err) {
+        // Validation
+        if (!username || !password) {
+            return res.status(400).json({ error: 'Username and password are required' });
+        }
+        
+        if (username.length < 3) {
+            return res.status(400).json({ error: 'Username must be at least 3 characters long' });
+        }
+        
+        if (password.length < 6) {
+            return res.status(400).json({ error: 'Password must be at least 6 characters long' });
+        }
+        
+        // Clean username
+        const cleanUsername = username.trim().toLowerCase();
+        
+        // Check if user already exists
+        db.get('SELECT id FROM users WHERE LOWER(username) = ?', [cleanUsername], async (err, existingUser) => {
             if (err) {
-                if (err.message.includes('UNIQUE constraint failed')) {
-                    return res.status(400).json({ error: 'Username already exists' });
-                }
-                return res.status(500).json({ error: 'Registration failed' });
+                console.error('Database error:', err);
+                return res.status(500).json({ error: 'Database error occurred' });
             }
-            res.json({ message: 'User registered successfully', userId: this.lastID });
+            
+            if (existingUser) {
+                return res.status(400).json({ error: 'Username already exists. Please choose a different username.' });
+            }
+            
+            try {
+                const hashedPassword = await bcrypt.hash(password, 10);
+                
+                db.run('INSERT INTO users (username, password) VALUES (?, ?)', [cleanUsername, hashedPassword], function(err) {
+                    if (err) {
+                        console.error('Insert error:', err);
+                        return res.status(500).json({ error: 'Failed to create account. Please try again.' });
+                    }
+                    
+                    console.log(`New user registered: ${cleanUsername} (ID: ${this.lastID})`);
+                    res.json({ 
+                        message: 'Account created successfully! You can now login.', 
+                        userId: this.lastID 
+                    });
+                });
+            } catch (hashError) {
+                console.error('Password hashing error:', hashError);
+                res.status(500).json({ error: 'Failed to process password. Please try again.' });
+            }
         });
     } catch (error) {
-        res.status(500).json({ error: 'Registration failed' });
+        console.error('Registration error:', error);
+        res.status(500).json({ error: 'Registration failed. Please try again.' });
     }
 });
 
 app.post('/api/auth/login', (req, res) => {
     const { username, password } = req.body;
     
-    db.get('SELECT * FROM users WHERE username = ?', [username], async (err, user) => {
-        if (err || !user) {
-            return res.status(401).json({ error: 'Invalid credentials' });
+    if (!username || !password) {
+        return res.status(400).json({ error: 'Username and password are required' });
+    }
+    
+    const cleanUsername = username.trim().toLowerCase();
+    
+    db.get('SELECT * FROM users WHERE LOWER(username) = ?', [cleanUsername], async (err, user) => {
+        if (err) {
+            console.error('Database error:', err);
+            return res.status(500).json({ error: 'Database error occurred' });
         }
         
-        const validPassword = await bcrypt.compare(password, user.password);
-        if (!validPassword) {
-            return res.status(401).json({ error: 'Invalid credentials' });
+        if (!user) {
+            return res.status(401).json({ error: 'Invalid username or password' });
         }
         
-        const token = jwt.sign({ userId: user.id, username: user.username, role: user.role }, JWT_SECRET);
-        res.json({ token, user: { id: user.id, username: user.username, role: user.role } });
+        try {
+            const validPassword = await bcrypt.compare(password, user.password);
+            if (!validPassword) {
+                return res.status(401).json({ error: 'Invalid username or password' });
+            }
+            
+            const token = jwt.sign({ userId: user.id, username: user.username, role: user.role }, JWT_SECRET, { expiresIn: '7d' });
+            res.json({ 
+                token, 
+                user: { id: user.id, username: user.username, role: user.role },
+                message: 'Login successful!'
+            });
+        } catch (compareError) {
+            console.error('Password comparison error:', compareError);
+            res.status(500).json({ error: 'Authentication error. Please try again.' });
+        }
     });
 });
 
@@ -523,5 +581,5 @@ function groupByAnalysis(data, groupColumn, aggregateColumn, operation) {
 
 // Start server
 app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Excel Automation Server running on http://0.0.0.0:${PORT}`);
+    console.log(`Excel AI Server running on http://0.0.0.0:${PORT}`);
 });

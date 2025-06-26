@@ -1,5 +1,5 @@
 
-# 📊 Excel Automation Web App
+# 🤖 Excel AI - Smart Excel Automation
 
 A complete, production-ready web application for automating Excel file operations with an intuitive interface and powerful backend capabilities.
 

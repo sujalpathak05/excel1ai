@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Excel Automation Web App</title>
+    <title>Excel AI - Smart Excel Automation</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
@@ -377,7 +377,7 @@
 
     <div class="container">
         <div class="header">
-            <h1>📊 Excel Automation Web App</h1>
+            <h1>🤖 Excel AI - Smart Excel Automation</h1>
             <p>Upload, Process, Analyze, and Export Excel files with powerful automation tools</p>
         </div>
 
@@ -410,15 +410,18 @@
                 <h3>Create New Account</h3>
                 <form id="registerForm">
                     <div class="form-group">
-                        <label>Username</label>
-                        <input type="text" class="form-control" id="registerUsername" required>
+                        <label>Username (minimum 3 characters)</label>
+                        <input type="text" class="form-control" id="registerUsername" required minlength="3" placeholder="Enter username">
                     </div>
                     <div class="form-group">
-                        <label>Password</label>
-                        <input type="password" class="form-control" id="registerPassword" required>
+                        <label>Password (minimum 6 characters)</label>
+                        <input type="password" class="form-control" id="registerPassword" required minlength="6" placeholder="Enter password">
                     </div>
-                    <button type="submit" class="btn btn-primary">Register</button>
+                    <button type="submit" class="btn btn-primary">Create Account</button>
                 </form>
+                <div class="alert alert-info" style="margin-top: 20px;">
+                    <strong>Note:</strong> Your account will be created instantly and securely stored.
+                </div>
             </div>
         </div>
 
