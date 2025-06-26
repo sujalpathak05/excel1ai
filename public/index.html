@@ -1,0 +1,188 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excel Automation Web App</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body class="bg-gray-100">
+    <!-- Navigation -->
+    <nav class="bg-blue-600 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">Excel Automation</h1>
+            <div id="nav-links" class="hidden">
+                <button id="logout-btn" class="bg-red-500 px-4 py-2 rounded hover:bg-red-600">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-lg w-96">
+            <h2 id="auth-title" class="text-2xl font-bold mb-4">Login</h2>
+            <form id="auth-form">
+                <div id="username-field" class="mb-4">
+                    <input type="text" id="username" placeholder="Username" class="w-full p-3 border rounded">
+                </div>
+                <div id="email-field" class="mb-4 hidden">
+                    <input type="email" id="email" placeholder="Email" class="w-full p-3 border rounded">
+                </div>
+                <div class="mb-4">
+                    <input type="password" id="password" placeholder="Password" class="w-full p-3 border rounded">
+                </div>
+                <button type="submit" id="auth-submit" class="w-full bg-blue-600 text-white p-3 rounded hover:bg-blue-700">Login</button>
+            </form>
+            <p class="mt-4 text-center">
+                <span id="auth-switch-text">Don't have an account?</span>
+                <button id="auth-switch" class="text-blue-600 hover:underline">Register</button>
+            </p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="main-content" class="hidden container mx-auto p-4">
+        <!-- File Upload Section -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 class="text-xl font-bold mb-4">File Upload</h2>
+            <div id="file-upload-area" class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-blue-500">
+                <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
+                <p class="text-gray-600">Drop files here or click to browse</p>
+                <p class="text-sm text-gray-500 mt-2">Supports .xlsx, .xls, .csv files</p>
+                <input type="file" id="file-input" class="hidden" accept=".xlsx,.xls,.csv">
+            </div>
+        </div>
+
+        <!-- Data Preview -->
+        <div id="data-preview" class="bg-white rounded-lg shadow-md p-6 mb-6 hidden">
+            <h2 class="text-xl font-bold mb-4">Data Preview</h2>
+            <div class="overflow-x-auto">
+                <table id="data-table" class="min-w-full table-auto">
+                    <thead id="table-head" class="bg-gray-50"></thead>
+                    <tbody id="table-body"></tbody>
+                </table>
+            </div>
+            <div class="mt-4">
+                <p id="row-count" class="text-sm text-gray-600"></p>
+            </div>
+        </div>
+
+        <!-- Operations Panel -->
+        <div id="operations-panel" class="bg-white rounded-lg shadow-md p-6 mb-6 hidden">
+            <h2 class="text-xl font-bold mb-4">Data Operations</h2>
+            
+            <!-- Operation Tabs -->
+            <div class="flex border-b mb-4">
+                <button class="tab-btn active px-4 py-2 border-b-2 border-blue-500" data-tab="cleaning">Cleaning</button>
+                <button class="tab-btn px-4 py-2" data-tab="analysis">Analysis</button>
+                <button class="tab-btn px-4 py-2" data-tab="visualization">Charts</button>
+                <button class="tab-btn px-4 py-2" data-tab="export">Export</button>
+            </div>
+
+            <!-- Cleaning Operations -->
+            <div id="cleaning-tab" class="tab-content">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <button class="operation-btn bg-blue-500 text-white p-3 rounded hover:bg-blue-600" data-operation="removeDuplicates">
+                        <i class="fas fa-minus-circle mr-2"></i>Remove Duplicates
+                    </button>
+                    <button class="operation-btn bg-green-500 text-white p-3 rounded hover:bg-green-600" data-operation="trimSpaces">
+                        <i class="fas fa-scissors mr-2"></i>Trim Spaces
+                    </button>
+                    <button class="operation-btn bg-purple-500 text-white p-3 rounded hover:bg-purple-600" data-operation="changeCase">
+                        <i class="fas fa-font mr-2"></i>Change Case
+                    </button>
+                    <button class="operation-btn bg-orange-500 text-white p-3 rounded hover:bg-orange-600" data-operation="findReplace">
+                        <i class="fas fa-search mr-2"></i>Find & Replace
+                    </button>
+                    <button class="operation-btn bg-red-500 text-white p-3 rounded hover:bg-red-600" data-operation="filter">
+                        <i class="fas fa-filter mr-2"></i>Filter Data
+                    </button>
+                    <button class="operation-btn bg-indigo-500 text-white p-3 rounded hover:bg-indigo-600" data-operation="sort">
+                        <i class="fas fa-sort mr-2"></i>Sort Data
+                    </button>
+                </div>
+            </div>
+
+            <!-- Analysis Operations -->
+            <div id="analysis-tab" class="tab-content hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <button class="operation-btn bg-teal-500 text-white p-3 rounded hover:bg-teal-600" data-operation="pivot">
+                        <i class="fas fa-table mr-2"></i>Pivot Table
+                    </button>
+                    <button class="operation-btn bg-cyan-500 text-white p-3 rounded hover:bg-cyan-600" data-operation="aggregate">
+                        <i class="fas fa-calculator mr-2"></i>Aggregate Data
+                    </button>
+                </div>
+            </div>
+
+            <!-- Visualization -->
+            <div id="visualization-tab" class="tab-content hidden">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <button class="chart-btn bg-pink-500 text-white p-3 rounded hover:bg-pink-600" data-chart="bar">
+                        <i class="fas fa-chart-bar mr-2"></i>Bar Chart
+                    </button>
+                    <button class="chart-btn bg-yellow-500 text-white p-3 rounded hover:bg-yellow-600" data-chart="line">
+                        <i class="fas fa-chart-line mr-2"></i>Line Chart
+                    </button>
+                    <button class="chart-btn bg-green-500 text-white p-3 rounded hover:bg-green-600" data-chart="pie">
+                        <i class="fas fa-chart-pie mr-2"></i>Pie Chart
+                    </button>
+                </div>
+                <canvas id="chart-canvas" class="mt-4 hidden" width="400" height="200"></canvas>
+            </div>
+
+            <!-- Export Options -->
+            <div id="export-tab" class="tab-content hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <button class="export-btn bg-green-600 text-white p-3 rounded hover:bg-green-700" data-format="xlsx">
+                        <i class="fas fa-file-excel mr-2"></i>Excel (.xlsx)
+                    </button>
+                    <button class="export-btn bg-blue-600 text-white p-3 rounded hover:bg-blue-700" data-format="csv">
+                        <i class="fas fa-file-csv mr-2"></i>CSV
+                    </button>
+                    <button class="export-btn bg-red-600 text-white p-3 rounded hover:bg-red-700" data-format="pdf">
+                        <i class="fas fa-file-pdf mr-2"></i>PDF
+                    </button>
+                    <button id="save-template-btn" class="bg-purple-600 text-white p-3 rounded hover:bg-purple-700">
+                        <i class="fas fa-save mr-2"></i>Save Template
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Templates Section -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 class="text-xl font-bold mb-4">Saved Templates</h2>
+            <div id="templates-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Templates will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Files History -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-bold mb-4">File History</h2>
+            <div id="files-list" class="space-y-2">
+                <!-- Files will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for operations -->
+    <div id="operation-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white p-6 rounded-lg w-96">
+            <h3 id="modal-title" class="text-xl font-bold mb-4"></h3>
+            <div id="modal-content"></div>
+            <div class="flex justify-end mt-4">
+                <button id="modal-cancel" class="px-4 py-2 mr-2 bg-gray-300 rounded hover:bg-gray-400">Cancel</button>
+                <button id="modal-apply" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Apply</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
