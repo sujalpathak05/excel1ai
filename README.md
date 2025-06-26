@@ -82,16 +82,20 @@ A complete, production-ready web application for automating Excel file operation
 
 ### **Quick Start**
 
-1. **Clone or download the project files**
+1. **Clone the repository**
+```bash
+git clone https://github.com/sujalpathak05/excel1.git
+cd excel1
+```
 
 2. **Install dependencies**
 ```bash
-npm install express cors multer xlsx papaparse jsonwebtoken bcryptjs sqlite3 node-cron axios chart.js jspdf
+npm install
 ```
 
 3. **Start the server**
 ```bash
-node index.js
+npm start
 ```
 
 4. **Access the application**
@@ -166,8 +170,8 @@ excel-automation-app/
 
 ## 🚀 Deployment
 
-### **Replit Deployment**
-1. Import the project to Replit
+### **Uplakshy Platform Deployment**
+1. Import the project to your preferred hosting platform
 2. Install dependencies automatically
 3. Configure environment variables
 4. Run the application
@@ -264,4 +268,4 @@ For issues and questions:
 
 ---
 
-**Built with ❤️ for Excel automation enthusiasts!**
+**Built with ❤️ by Uplakshy Pathak for Excel automation enthusiasts!**
