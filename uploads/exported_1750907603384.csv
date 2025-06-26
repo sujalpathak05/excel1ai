@@ -1,0 +1,46 @@
+OrderDate,Region,Manager,SalesMan,Item,Units," Unit_price ",Sale_amt
+43106,East,Martha,Alexander,Television,95,1198,113810
+43123,Central,Hermann,Shelli,Home Theater,50,500,25000
+43140,Central,Hermann,Luis,Television,36,1198,43128
+43157,Central,Timothy,David,Cell Phone,27,225,6075
+43174,West,Timothy,Stephen,Television,56,1198,67088
+43191,East,Martha,Alexander,Home Theater,60,500,30000
+43208,Central,Martha,Steven,Television,75,1198,89850
+43225,Central,Hermann,Luis,Television,90,1198,107820
+43242,West,Douglas,Michael,Television,32,1198,38336
+43259,East,Martha,Alexander,Home Theater,60,500,30000
+43276,Central,Hermann,Sigal,Television,90,1198,107820
+43293,East,Martha,Diana,Home Theater,29,500,14500
+43310,East,Douglas,Karen,Home Theater,81,500,40500
+43327,East,Martha,Alexander,Television,35,1198,41930
+43344,Central,Douglas,John,Desk,2,125,250
+43361,East,Martha,Alexander,Video Games,16,58.5,936
+43378,Central,Hermann,Sigal,Home Theater,28,500,14000
+43395,East,Martha,Alexander,Cell Phone,64,225,14400
+43412,East,Douglas,Karen,Cell Phone,15,225,3375
+43429,Central,Hermann,Shelli,Video Games,96,58.5,5616
+43446,Central,Douglas,John,Television,67,1198,80266
+43463,East,Douglas,Karen,Video Games,74,58.5,4329
+43480,Central,Timothy,David,Home Theater,46,500,23000
+43497,Central,Douglas,John,Home Theater,87,500,43500
+43514,East,Martha,Alexander,Home Theater,4,500,2000
+43531,West,Timothy,Stephen,Home Theater,7,500,3500
+43548,Central,Hermann,Luis,Video Games,50,58.5,2925
+43565,Central,Martha,Steven,Television,66,1198,79068
+43582,East,Martha,Diana,Cell Phone,96,225,21600
+43599,Central,Timothy,David,Television,53,1198,63494
+43616,Central,Timothy,David,Home Theater,80,500,40000
+43633,Central,Hermann,Shelli,Desk,5,125,625
+43650,East,Martha,Alexander,Video Games,62,58.5,3627
+43667,Central,Hermann,Sigal,Video Games,55,58.5,3217.5
+43684,Central,Hermann,Shelli,Video Games,42,58.5,2457
+43701,West,Timothy,Stephen,Desk,3,125,375
+43718,Central,Timothy,David,Television,7,1198,8386
+43735,West,Timothy,Stephen,Cell Phone,76,225,17100
+43752,West,Douglas,Michael,Home Theater,57,500,28500
+43769,Central,Martha,Steven,Television,14,1198,16772
+43786,Central,Hermann,Luis,Home Theater,11,500,5500
+43803,Central,Hermann,Luis,Home Theater,94,500,47000
+43820,Central,Martha,Steven,Home Theater,28,500,14000
+,,,,,278,1125,62550
+,,,,,34.75,140.625,7818.75
