@@ -10,14 +10,47 @@ let currentChart = null;
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', function() {
+    // Check if user is already logged in
     if (authToken) {
-        showMainApp();
-        loadUserInfo();
+        // Verify token is still valid
+        verifyToken().then(valid => {
+            if (valid) {
+                showMainApp();
+                loadUserInfo();
+            } else {
+                // Token is invalid, show auth section
+                logout();
+            }
+        });
+    } else {
+        // No token, show auth section
+        showAuthSection();
     }
     
     setupEventListeners();
     loadTemplates();
 });
+
+// Verify token function
+async function verifyToken() {
+    try {
+        const response = await fetch('/api/templates', {
+            headers: {
+                'Authorization': `Bearer ${authToken}`
+            }
+        });
+        return response.ok;
+    } catch (error) {
+        return false;
+    }
+}
+
+// Show auth section function
+function showAuthSection() {
+    document.getElementById('authSection').style.display = 'block';
+    document.getElementById('mainApp').style.display = 'none';
+    document.getElementById('userInfo').classList.add('hidden');
+}
 
 // Setup event listeners
 function setupEventListeners() {
@@ -141,9 +174,15 @@ function logout() {
     authToken = null;
     currentUser = null;
     localStorage.removeItem('authToken');
-    document.getElementById('authSection').style.display = 'block';
-    document.getElementById('mainApp').style.display = 'none';
-    document.getElementById('userInfo').classList.add('hidden');
+    
+    // Force show auth section
+    showAuthSection();
+    
+    // Clear any existing data
+    currentData = [];
+    originalData = [];
+    operationsQueue = [];
+    
     showAlert('Logged out successfully!', 'info');
 }
 
