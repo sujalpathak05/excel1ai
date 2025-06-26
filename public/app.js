@@ -29,6 +29,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     setupEventListeners();
     loadTemplates();
+    
+    // Check device capabilities
+    setTimeout(() => {
+        checkDeviceCapabilities();
+    }, 1000);
 });
 
 // Verify token function
@@ -59,6 +64,13 @@ function setupEventListeners() {
     const fileUploadArea = document.getElementById('fileUploadArea');
     
     fileInput.addEventListener('change', handleFileSelect);
+    
+    // Camera and gallery inputs
+    const cameraInput = document.getElementById('cameraInput');
+    const galleryInput = document.getElementById('galleryInput');
+    
+    cameraInput.addEventListener('change', handleFileSelect);
+    galleryInput.addEventListener('change', handleFileSelect);
     
     // Drag and drop
     fileUploadArea.addEventListener('dragover', function(e) {
@@ -215,10 +227,114 @@ function showAnalyticsTab(tabName) {
     document.getElementById(tabName + 'Tab').classList.add('active');
 }
 
+// Camera and Gallery Access Functions
+async function requestCameraAccess() {
+    try {
+        // Request camera permission
+        showAlert('Requesting camera access...', 'info');
+        
+        // Check if we're on HTTPS (required for camera access)
+        if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+            showAlert('Camera access requires HTTPS connection. Please use secure connection.', 'error');
+            return;
+        }
+        
+        // Request media permissions
+        const stream = await navigator.mediaDevices.getUserMedia({ 
+            video: { facingMode: 'environment' }, // Use back camera
+            audio: false 
+        });
+        
+        // Stop the stream immediately as we just needed permission
+        stream.getTracks().forEach(track => track.stop());
+        
+        showAlert('Camera access granted! Please select file to capture.', 'success');
+        document.getElementById('cameraInput').click();
+        
+    } catch (error) {
+        console.error('Camera access error:', error);
+        if (error.name === 'NotAllowedError') {
+            showAlert('Camera access denied. Please allow camera permission and try again.', 'error');
+        } else if (error.name === 'NotFoundError') {
+            showAlert('No camera found on this device.', 'error');
+        } else if (error.name === 'NotSupportedError') {
+            showAlert('Camera not supported on this browser.', 'error');
+        } else {
+            showAlert('Unable to access camera. Please try browsing files instead.', 'error');
+        }
+    }
+}
+
+async function requestGalleryAccess() {
+    try {
+        showAlert('Opening gallery access...', 'info');
+        
+        // For gallery, we can directly open file picker
+        // Browser will handle the permission request
+        document.getElementById('galleryInput').click();
+        
+        showAlert('Please select image or file from your gallery.', 'success');
+        
+    } catch (error) {
+        console.error('Gallery access error:', error);
+        showAlert('Unable to access gallery. Please try browsing files instead.', 'error');
+    }
+}
+
+// Check device capabilities
+function checkDeviceCapabilities() {
+    const capabilities = {
+        camera: false,
+        fileAccess: true,
+        mediaDevices: false
+    };
+    
+    // Check for camera support
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        capabilities.camera = true;
+        capabilities.mediaDevices = true;
+    }
+    
+    // Check if it's mobile device
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    if (isMobile) {
+        showAlert('Mobile device detected. Camera and gallery access available!', 'info');
+    }
+    
+    return capabilities;
+}
+
 // File handling functions
 async function handleFileSelect() {
-    const file = document.getElementById('fileInput').files[0];
+    // Get file from any of the inputs
+    const fileInput = document.getElementById('fileInput');
+    const cameraInput = document.getElementById('cameraInput');
+    const galleryInput = document.getElementById('galleryInput');
+    
+    let file = null;
+    let source = 'file';
+    
+    if (fileInput.files[0]) {
+        file = fileInput.files[0];
+        source = 'file';
+    } else if (cameraInput.files[0]) {
+        file = cameraInput.files[0];
+        source = 'camera';
+    } else if (galleryInput.files[0]) {
+        file = galleryInput.files[0];
+        source = 'gallery';
+    }
+    
     if (!file) return;
+    
+    // Check if it's an image file
+    if (file.type.startsWith('image/')) {
+        showAlert(`Image selected from ${source}. Please note: Image processing is limited. For best results, use Excel/CSV files.`, 'info');
+        
+        // For now, we'll still try to process it as a regular file
+        // In future, you could add OCR or image-to-text conversion here
+    }
     
     const formData = new FormData();
     formData.append('file', file);

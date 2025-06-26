@@ -432,9 +432,22 @@
                 <div class="file-upload-area" id="fileUploadArea">
                     <div>
                         <h4>Drag & drop your Excel or CSV file here</h4>
-                        <p>or click to browse (Supports .xlsx, .xls, .csv)</p>
+                        <p>or choose from options below (Supports .xlsx, .xls, .csv)</p>
                         <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" style="display: none;">
-                        <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">Choose File</button>
+                        <input type="file" id="cameraInput" accept=".xlsx,.xls,.csv,image/*" capture="environment" style="display: none;">
+                        <input type="file" id="galleryInput" accept=".xlsx,.xls,.csv,image/*" style="display: none;">
+                        
+                        <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 20px;">
+                            <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+                                📂 Browse Files
+                            </button>
+                            <button class="btn btn-info" onclick="requestCameraAccess()">
+                                📷 Take Photo
+                            </button>
+                            <button class="btn btn-success" onclick="requestGalleryAccess()">
+                                🖼️ From Gallery
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div id="uploadStatus"></div>
