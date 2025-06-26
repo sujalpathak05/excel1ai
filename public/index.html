@@ -1,0 +1,614 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excel Automation Web App</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .auth-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .main-app {
+            display: none;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+        }
+
+        .card h3 {
+            color: #4a5568;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-success {
+            background: #48bb78;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #ed8936;
+            color: white;
+        }
+
+        .btn-info {
+            background: #4299e1;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #a0aec0;
+            color: white;
+        }
+
+        .file-upload-area {
+            border: 3px dashed #cbd5e0;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            background: #f7fafc;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .file-upload-area:hover {
+            border-color: #667eea;
+            background: #edf2f7;
+        }
+
+        .file-upload-area.dragover {
+            border-color: #667eea;
+            background: #e6fffa;
+        }
+
+        .data-table {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        .data-table table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .data-table th {
+            background: #f7fafc;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .operations-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .operation-card {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .operation-card h4 {
+            margin-bottom: 15px;
+            color: #2d3748;
+        }
+
+        .select-control {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .checkbox-item input {
+            margin-right: 8px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #718096;
+            margin-top: 5px;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .alert-success {
+            background: #c6f6d5;
+            color: #22543d;
+            border: 1px solid #9ae6b4;
+        }
+
+        .alert-error {
+            background: #fed7d7;
+            color: #742a2a;
+            border: 1px solid #fc8181;
+        }
+
+        .alert-info {
+            background: #bee3f8;
+            color: #2a4365;
+            border: 1px solid #90cdf4;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #e2e8f0;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: #718096;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            margin: 20px 0;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .user-info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .operations-panel {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="user-info hidden" id="userInfo">
+        <span id="usernameDisplay"></span>
+        <button onclick="logout()" class="btn btn-secondary" style="margin-left: 10px; padding: 5px 10px; font-size: 12px;">Logout</button>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>📊 Excel Automation Web App</h1>
+            <p>Upload, Process, Analyze, and Export Excel files with powerful automation tools</p>
+        </div>
+
+        <!-- Authentication Section -->
+        <div class="auth-section" id="authSection">
+            <div class="tabs">
+                <button class="tab active" onclick="showTab('login')">Login</button>
+                <button class="tab" onclick="showTab('register')">Register</button>
+            </div>
+
+            <div id="loginTab" class="tab-content active">
+                <h3>Login to Your Account</h3>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" class="form-control" id="loginUsername" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" class="form-control" id="loginPassword" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </form>
+                <div class="alert alert-info" style="margin-top: 20px;">
+                    <strong>Demo Account:</strong> Username: admin, Password: admin123
+                </div>
+            </div>
+
+            <div id="registerTab" class="tab-content">
+                <h3>Create New Account</h3>
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" class="form-control" id="registerUsername" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" class="form-control" id="registerPassword" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Register</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Main Application -->
+        <div class="main-app" id="mainApp">
+            <!-- File Upload Section -->
+            <div class="card">
+                <h3>📁 File Upload</h3>
+                <div class="file-upload-area" id="fileUploadArea">
+                    <div>
+                        <h4>Drag & drop your Excel or CSV file here</h4>
+                        <p>or click to browse (Supports .xlsx, .xls, .csv)</p>
+                        <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" style="display: none;">
+                        <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">Choose File</button>
+                    </div>
+                </div>
+                <div id="uploadStatus"></div>
+            </div>
+
+            <!-- Data Preview and Stats -->
+            <div class="card hidden" id="dataPreviewCard">
+                <h3>📋 Data Preview & Statistics</h3>
+                <div class="stats-grid" id="statsGrid"></div>
+                <div class="data-table" id="dataTableContainer"></div>
+            </div>
+
+            <!-- Data Operations -->
+            <div class="card hidden" id="operationsCard">
+                <h3>⚙️ Data Operations</h3>
+                <div class="operations-panel">
+                    <!-- Remove Duplicates -->
+                    <div class="operation-card">
+                        <h4>Remove Duplicates</h4>
+                        <label>Select columns to check for duplicates:</label>
+                        <div class="checkbox-group" id="duplicateColumns"></div>
+                        <button class="btn btn-warning" onclick="addOperation('removeDuplicates')">Add Operation</button>
+                    </div>
+
+                    <!-- Trim Spaces -->
+                    <div class="operation-card">
+                        <h4>Trim Spaces & Clean Text</h4>
+                        <label>Select columns to clean:</label>
+                        <div class="checkbox-group" id="trimColumns"></div>
+                        <button class="btn btn-warning" onclick="addOperation('trimSpaces')">Add Operation</button>
+                    </div>
+
+                    <!-- Change Case -->
+                    <div class="operation-card">
+                        <h4>Change Text Case</h4>
+                        <label>Select columns:</label>
+                        <div class="checkbox-group" id="caseColumns"></div>
+                        <select class="select-control" id="caseType">
+                            <option value="upper">UPPERCASE</option>
+                            <option value="lower">lowercase</option>
+                        </select>
+                        <button class="btn btn-warning" onclick="addOperation('changeCase')">Add Operation</button>
+                    </div>
+
+                    <!-- Find & Replace -->
+                    <div class="operation-card">
+                        <h4>Find & Replace</h4>
+                        <select class="select-control" id="findReplaceColumn">
+                            <option value="">Select column</option>
+                        </select>
+                        <input type="text" class="form-control" id="findText" placeholder="Find text">
+                        <input type="text" class="form-control" id="replaceText" placeholder="Replace with">
+                        <button class="btn btn-warning" onclick="addOperation('findReplace')">Add Operation</button>
+                    </div>
+
+                    <!-- Filter Data -->
+                    <div class="operation-card">
+                        <h4>Filter Data</h4>
+                        <select class="select-control" id="filterColumn">
+                            <option value="">Select column</option>
+                        </select>
+                        <select class="select-control" id="filterOperator">
+                            <option value="equals">Equals</option>
+                            <option value="contains">Contains</option>
+                            <option value="greater">Greater than</option>
+                            <option value="less">Less than</option>
+                        </select>
+                        <input type="text" class="form-control" id="filterValue" placeholder="Filter value">
+                        <button class="btn btn-warning" onclick="addOperation('filterData')">Add Operation</button>
+                    </div>
+
+                    <!-- Sort Data -->
+                    <div class="operation-card">
+                        <h4>Sort Data</h4>
+                        <select class="select-control" id="sortColumn">
+                            <option value="">Select column</option>
+                        </select>
+                        <select class="select-control" id="sortDirection">
+                            <option value="asc">Ascending</option>
+                            <option value="desc">Descending</option>
+                        </select>
+                        <button class="btn btn-warning" onclick="addOperation('sortData')">Add Operation</button>
+                    </div>
+                </div>
+
+                <!-- Operations Queue -->
+                <div style="margin-top: 30px;">
+                    <h4>📝 Operations Queue</h4>
+                    <div id="operationsQueue"></div>
+                    <div style="margin-top: 20px;">
+                        <button class="btn btn-success" onclick="processOperations()">🚀 Process All Operations</button>
+                        <button class="btn btn-secondary" onclick="clearOperations()">Clear Queue</button>
+                        <button class="btn btn-info" onclick="saveTemplate()">💾 Save as Template</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics & Visualization -->
+            <div class="card hidden" id="analyticsCard">
+                <h3>📊 Analytics & Visualization</h3>
+                <div class="tabs">
+                    <button class="tab active" onclick="showAnalyticsTab('summary')">Summary</button>
+                    <button class="tab" onclick="showAnalyticsTab('pivot')">Pivot Table</button>
+                    <button class="tab" onclick="showAnalyticsTab('charts')">Charts</button>
+                </div>
+
+                <div id="summaryTab" class="tab-content active">
+                    <button class="btn btn-info" onclick="generateSummary()">Generate Summary</button>
+                    <div id="summaryResults"></div>
+                </div>
+
+                <div id="pivotTab" class="tab-content">
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin: 20px 0;">
+                        <div>
+                            <label>Row Fields:</label>
+                            <select class="select-control" id="pivotRows" multiple></select>
+                        </div>
+                        <div>
+                            <label>Column Fields:</label>
+                            <select class="select-control" id="pivotColumns" multiple></select>
+                        </div>
+                        <div>
+                            <label>Value Fields:</label>
+                            <select class="select-control" id="pivotValues" multiple></select>
+                        </div>
+                        <div>
+                            <label>Aggregation:</label>
+                            <select class="select-control" id="pivotAggregation">
+                                <option value="sum">Sum</option>
+                                <option value="avg">Average</option>
+                                <option value="count">Count</option>
+                                <option value="min">Minimum</option>
+                                <option value="max">Maximum</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-info" onclick="generatePivot()">Generate Pivot Table</button>
+                    <div id="pivotResults"></div>
+                </div>
+
+                <div id="chartsTab" class="tab-content">
+                    <div style="margin: 20px 0;">
+                        <label>Chart Type:</label>
+                        <select class="select-control" id="chartType" style="width: 200px; display: inline-block; margin-right: 20px;">
+                            <option value="bar">Bar Chart</option>
+                            <option value="line">Line Chart</option>
+                            <option value="pie">Pie Chart</option>
+                        </select>
+                        <button class="btn btn-info" onclick="generateChart()">Generate Chart</button>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="dataChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Export Section -->
+            <div class="card hidden" id="exportCard">
+                <h3>📤 Export Data</h3>
+                <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                    <button class="btn btn-success" onclick="exportData('csv')">📄 Export as CSV</button>
+                    <button class="btn btn-success" onclick="exportData('xlsx')">📊 Export as Excel</button>
+                    <button class="btn btn-success" onclick="exportPDF()">📑 Export as PDF</button>
+                </div>
+                <div id="exportStatus"></div>
+            </div>
+
+            <!-- Templates Section -->
+            <div class="card" id="templatesCard">
+                <h3>📋 Saved Templates</h3>
+                <div id="templatesList"></div>
+                <button class="btn btn-info" onclick="loadTemplates()">🔄 Refresh Templates</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
