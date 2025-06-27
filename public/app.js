@@ -1,4 +1,3 @@
-
 // Global variables
 let currentData = [];
 let originalData = [];
@@ -52,9 +51,10 @@ async function verifyToken() {
 
 // Show auth section function
 function showAuthSection() {
-    document.getElementById('authSection').style.display = 'block';
-    document.getElementById('mainApp').style.display = 'none';
-    document.getElementById('userInfo').classList.add('hidden');
+    // Bypass login/signup and show main app directly
+    document.getElementById('authSection').style.display = 'none';
+    document.getElementById('mainApp').style.display = 'block';
+    document.getElementById('userInfo').classList.remove('hidden');
 }
 
 // Setup event listeners
@@ -94,11 +94,14 @@ function setupEventListeners() {
     });
     
     // Auth forms
-    document.getElementById('loginForm').addEventListener('submit', handleLogin);
-    document.getElementById('registerForm').addEventListener('submit', handleRegister);
+    // Commenting out login and register handlers to disable auth
+    // document.getElementById('loginForm').addEventListener('submit', handleLogin);
+    // document.getElementById('registerForm').addEventListener('submit', handleRegister);
 }
 
 // Authentication functions
+// Commenting out login and register handlers to disable auth
+/*
 async function handleLogin(e) {
     e.preventDefault();
     const username = document.getElementById('loginUsername').value;
@@ -181,6 +184,7 @@ async function handleRegister(e) {
         showAlert('Registration failed. Please check your connection and try again.', 'error');
     }
 }
+*/
 
 function logout() {
     authToken = null;
