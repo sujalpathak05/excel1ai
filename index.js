@@ -20,11 +20,8 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
-// Create uploads directory if it doesn't exist
-const uploadsDir = './uploads';
-if (!fs.existsSync(uploadsDir)) {
-    fs.mkdirSync(uploadsDir);
-}
+// Use /tmp for uploads on Render
+const uploadsDir = '/tmp';
 
 // Database initialization
 const db = new sqlite3.Database('./excel_automation.db');
